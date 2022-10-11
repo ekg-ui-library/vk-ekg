@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.9)
+project(vk_ekg)
+set(VK_VERSION "1.3.224.1")
+
+if (WIN32)
+    set(EXECUTABLE_OUTPUT_PATH ../build/win32/)
+else()
+    set(EXECUTABLE_OUTPUT_PATH ../build/linux/)
+endif()
+
+file(GLOB SRC_FILES "/src/*.cpp")
+file(GLOB SRC_TEST_FILES "test/*.cpp")
+
+add_compile_options(-O3)
+add_executable(vk_ekg ${SRC_TEST_FILES} ${SRC_FILES})
+include_directories(include)
+
+if (WIN32)
+    message("-- WIN32 platform detected!")
+    include_directories("C:/VulkanSDK/${VK_VERSION}/Include/")
+    target_link_libraries(vk_ekg mingw32 SDL2main SDL2 freetype)
+else()
+    message("-- LINUX platform detected!")
+    target_link_libraries(vk_ekg SDL2main SDL2 freetype)
+endif()
