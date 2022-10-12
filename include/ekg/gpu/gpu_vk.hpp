@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 
 namespace ekg::gpu {
-    void init_vk();
+
 }
 
 #endif

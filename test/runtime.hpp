@@ -2,23 +2,22 @@
 #define EKG_APP_H
 
 #include <SDL2/SDL.h>
+#include "ekg/gpu/gpu_vk_renderer.hpp"
 
-struct timing {
-    uint64_t elapsed_ticks {};
-    uint64_t delta_ticks {};
-
-    bool reach(uint64_t ms);
-    bool reset();
-};
-
-struct runtime {
-    SDL_DisplayMode sdl_mode {};
+class runtime {
+protected:
+    SDL_DisplayMode sdl_display_mode {};
     SDL_Window* sdl_window {};
 
-    float dt {};
-    bool mainloop {};
-};
+    bool mainloop_running {false};
+    ekg::gpu::vk_renderer renderer {};
+public:
+    SDL_DisplayMode &get_display_mode();
+    SDL_Window* get_sdl_window();
 
-extern runtime* const core;
+    void init();
+    void mainloop();
+    void quit();
+};
 
 #endif
