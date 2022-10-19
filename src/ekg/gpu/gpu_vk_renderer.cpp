@@ -1,10 +1,12 @@
 #include "ekg/gpu/gpu_vk_renderer.hpp"
-#include "ekg/util/util.hpp"
+#include "ekg/util/env.hpp"
 #include <vulkan/vulkan.h>
 #include <SDL2/SDL_vulkan.h>
 #include <set>
 #include <limits>
 #include <functional>
+
+ekg::gpu::vk_renderer ekg::gpu::vulkan {};
 
 bool ekg::gpu::queue_families::is_complete() {
     return graphics_family.has_value() && present_family.has_value();
@@ -67,6 +69,12 @@ VkBool32 ekg::gpu::vk_renderer::debug_callback(VkDebugUtilsMessageSeverityFlagBi
 void ekg::gpu::vk_renderer::setup() {
     this->create_instance();
     this->setup_debug_messenger();
+    this->pick_physical_device();
+    this->create_logical_device();
+    this->create_swap_chain();
+    this->create_image_views();
+    this->create_render_pass();
+    this->create_graphics_pipeline();
 }
 
 void ekg::gpu::vk_renderer::setup_debug_messenger() {
@@ -334,7 +342,7 @@ VkExtent2D ekg::gpu::vk_renderer::choose_swap_extent(const VkSurfaceCapabilities
     }
 }
 
-void ekg::gpu::vk_renderer::create_image_view() {
+void ekg::gpu::vk_renderer::create_image_views() {
     this->swap_chain_image_view.resize(this->swap_chain_image_view.size());
 
     for (size_t i = 0; i < this->swap_chain_images.size(); i++) {
@@ -392,5 +400,26 @@ void ekg::gpu::vk_renderer::create_render_pass() {
 }
 
 void ekg::gpu::vk_renderer::create_graphics_pipeline() {
+    VkPipelineLayoutCreateInfo pipeline_layout_create_info {};
+    pipeline_layout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipeline_layout_create_info.setLayoutCount = 0;
+    pipeline_layout_create_info.pushConstantRangeCount = 0;
 
+    if (vkCreatePipelineLayout(this->vk_device, &pipeline_layout_create_info, nullptr, &this->vk_pipeline_layout) != VK_SUCCESS) {
+        ekg::log("failed to create pipeline layout!");
+    }
+}
+
+bool ekg::gpu::vk_renderer::create_shader_module(VkShaderModule &shader_module, const std::string &code) {
+    VkShaderModuleCreateInfo create_info {};
+
+    create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    create_info.codeSize = code.size();
+    create_info.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+    if (vkCreateShaderModule(this->vk_device, &create_info, nullptr, &shader_module) != VK_SUCCESS) {
+        return false;
+    }
+
+    return true;
 }

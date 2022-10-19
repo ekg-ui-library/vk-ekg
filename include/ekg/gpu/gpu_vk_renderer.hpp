@@ -49,7 +49,8 @@ namespace ekg::gpu {
         VkSwapchainKHR vk_swap_chain {};
         VkFormat vk_swap_chain_image_format {};
         VkExtent2D vk_swap_chain_extent {};
-        VkRenderPass vk_render_pass;
+        VkRenderPass vk_render_pass {};
+        VkPipelineLayout vk_pipeline_layout {};
 
         std::vector<const char*> &get_extensions();
         void populate_debug_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT &create_info);
@@ -64,14 +65,17 @@ namespace ekg::gpu {
         void query_swap_chain_support(ekg::gpu::swap_chain_support_details &details, VkPhysicalDevice &device);
         void create_logical_device();
         void create_swap_chain();
-        void create_image_view();
+        void create_image_views();
         void create_render_pass();
         void create_graphics_pipeline();
 
         VkSurfaceFormatKHR choose_swap_surface_format(const std::vector<VkSurfaceFormatKHR> &available_formats);
         VkPresentModeKHR choose_swap_present_mode_format(const std::vector<VkPresentModeKHR> &available_present_modes);
         VkExtent2D choose_swap_extent(const VkSurfaceCapabilitiesKHR &capabilities);
+        bool create_shader_module(VkShaderModule &shader_module, const std::string &code);
     };
+
+    extern vk_renderer vulkan;
 }
 
 #endif

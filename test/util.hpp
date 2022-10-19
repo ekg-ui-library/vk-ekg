@@ -1,5 +1,5 @@
-#ifndef EKG_UTIL_H
-#define EKG_UTIL_H
+#ifndef EKG_UTIL_ENV_H
+#define EKG_UTIL_ENV_H
 
 #include <iostream>
 
